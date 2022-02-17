@@ -12,7 +12,10 @@
   "activationEvents": [
     "onCommand:conan-do.setup",
     "onCommand:conan-do.new",
-    "onCommand:conan-do.importDeps"
+    "onCommand:conan-do.importDeps",
+    "onCommand:conan-do.buildRelease",
+    "onCommand:conan-do.clean",
+    "onCommand:conan-do.genDepTree"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -28,6 +31,18 @@
       {
         "command": "conan-do.importDeps",
         "title": "Conan-Do : Import Dependencies"
+      },
+      {
+        "command": "conan-do.buildRelease",
+        "title": "Conan-Do : Build Release"
+      },
+      {
+        "command": "conan-do.clean",
+        "title": "Conan-Do : Clean"
+      },
+      {
+        "command": "conan-do.genDepTree",
+        "title": "Conan-Do : Generate Dependency Tree"
       }
     ]
   },
@@ -53,7 +68,9 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
+    "@types/cli-progress": "^3.9.2",
     "@types/fs-extra": "^9.0.13",
+    "cli-progress": "^3.10.0",
     "fs-extra": "^10.0.0"
   }
 }

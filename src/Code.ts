@@ -234,3 +234,118 @@ int main(int argc, char **argv) {
     return RUN_ALL_TESTS();
 }
 `;
+
+export const buildTestSh = `
+#!/bin/sh
+
+cd $1
+rm -rf $1/test_package/build/*
+conan create -pr:h=default -pr:b=default -s build_type=Debug . --build=missing
+
+ln -s $(find $1/test_package/build/ -name 'pkg_test') $1/test_package/build/pkg_test
+`;
+
+export const buildDebug = `
+#!/bin/sh
+
+rm -f $1/build/conanbuildinfo.txt
+rm -f $1/build/conan.lock
+rm -f $1/build/graph_info.json
+rm -f $1/build/conaninfo.txt
+
+rm -rf $1/cmake-build-$3
+mkdir -p $1/build
+
+cd $1/build
+conan install -pr:h=default -pr:b=default -s build_type=$2 .. --build=missing
+conan build ..
+`;
+
+export const launch = `
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug file",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "\${workspaceFolder}/cmake-build-debug/\${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "\${fileDirname}",
+            "environment": [],
+            "preLaunchTask": "C++ build Debug",
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Debug Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "\${workspaceFolder}/test_package/build/pkg_test",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "\${fileDirname}",
+            "environment": [],
+            "preLaunchTask": "Build - Test - Type=Debug",
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}
+`;
+
+export const tasks = `
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "shell",
+        "label": "C++ build Debug",
+        "command": "\${workspaceFolder}/.vscode/build.sh \${workspaceFolder} Debug debug",
+        "args": [],
+        "options": {
+          "cwd": "\${workspaceFolder}"
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "type": "shell",
+        "label": "Build - Test - Type=Debug",
+        "command": "\${workspaceFolder}/.vscode/build_test.sh \${workspaceFolder}",
+        "args": [],
+        "options": {
+          "cwd": "\${workspaceFolder}"
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+}
+`;

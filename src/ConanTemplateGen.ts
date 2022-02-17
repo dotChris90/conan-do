@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as Path from 'path';
 import path = require('path');
 import * as os from 'os';
+import { execSync } from 'child_process';
 
 
 class PathCreation {
@@ -119,6 +120,40 @@ export class ConanTemplateGen {
                 testDir,
                 "CMakeLists.txt",
                 Code.test_CMakeFile            
+            )
+        );
+
+        //vscode 
+        let vscodeDir = path.join(templatePath,".vscode");
+        PathCreation.createDir(vscodeDir);
+        createdFiles.push(
+            PathCreation.createFile(
+                vscodeDir,
+                "tasks.json",
+                Code.tasks            
+            )
+        );
+        createdFiles.push(
+            PathCreation.createFile(
+                vscodeDir,
+                "launch.json",
+                Code.launch            
+            )
+        );
+
+        createdFiles.push(
+            PathCreation.createFile(
+                vscodeDir,
+                "build.sh",
+                Code.buildDebug            
+            )
+        );
+
+        createdFiles.push(
+            PathCreation.createFile(
+                vscodeDir,
+                "build_test.sh",
+                Code.buildTestSh            
             )
         );
 
