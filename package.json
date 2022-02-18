@@ -15,7 +15,8 @@
     "onCommand:conan-do.importDeps",
     "onCommand:conan-do.buildRelease",
     "onCommand:conan-do.clean",
-    "onCommand:conan-do.genDepTree"
+    "onCommand:conan-do.genDepTree",
+    "onCommand:conan-do.genDoxy"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -43,6 +44,10 @@
       {
         "command": "conan-do.genDepTree",
         "title": "Conan-Do : Generate Dependency Tree"
+      },
+      {
+        "command": "conan-do.genDoxy",
+        "title": "Conan-Do : Generate Doxygen Docu"
       }
     ]
   },

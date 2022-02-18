@@ -2,12 +2,12 @@ import {ILog} from './ILog';
 import * as vscode from 'vscode';
 
 export class VSCodeTerminal implements ILog {
-    private terminal : vscode.OutputChannel;
-    constructor(terminal : vscode.OutputChannel) {
+    private terminal : vscode.Terminal;
+    constructor(terminal : vscode.Terminal) {
         this.terminal = terminal;
     }
     writeOut(text: string): boolean {
-        this.terminal.append(text);
+        
         return true;
     };
 }

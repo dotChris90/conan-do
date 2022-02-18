@@ -12,13 +12,15 @@ import { execSync } from 'child_process';
 
 export function activate(context: vscode.ExtensionContext) {
 	
-	let conanOut = vscode.window.createOutputChannel("Conan-Do");
+	let conanOut = vscode.window.createTerminal("Conan-Do");
 	let conanRoot  = path.join(os.homedir(),".conan");
+	let project = vscode.workspace.workspaceFolders![0].uri.fsPath;
 	let conanDo = new ConanDo(
 		new VSCodeTerminal(
 			conanOut
 		),
-		conanRoot
+		conanRoot,
+		project
 	);
 
 	let disposable = vscode.commands.registerCommand('conan-do.setup', () => {
@@ -61,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if(vscode.workspace.workspaceFolders !== undefined) {
 			let ws = vscode.workspace.workspaceFolders[0].uri.fsPath;
 			conanOut.show();
-			conanDo.importDepdendencies(ws);
+			conanDo.importDepdendencies();
 			vscode.window.showInformationMessage("Dependencies imported to build");
 		}
 	});
@@ -76,7 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
 			});
 			result.then(function(value) {
 				conanOut.show();
-				conanDo.buildRelease(ws,value!,'default');
+				conanDo.buildRelease(value!,'default');
 			});
 			vscode.window.showInformationMessage("Finish build Release - check output Tab in VS Code");
 		}
@@ -85,9 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	disposable = vscode.commands.registerCommand('conan-do.clean', () => {
 		if(vscode.workspace.workspaceFolders !== undefined) {
-			let ws = vscode.workspace.workspaceFolders[0].uri.fsPath;
-			conanOut.show();
-			conanDo.clean(ws);
+			conanDo.clean();
 			vscode.window.showInformationMessage("Cleaning finish.");
 		}
 	});
@@ -96,19 +96,53 @@ export function activate(context: vscode.ExtensionContext) {
 	disposable = vscode.commands.registerCommand('conan-do.genDepTree', () => {
 		if(vscode.workspace.workspaceFolders !== undefined) {
 			let ws = vscode.workspace.workspaceFolders[0].uri.fsPath;
-			conanOut.show();
 			conanDo.generateDepTree(ws);
-			//let treeUri = vscode.Uri.file("file:///home/kac2st/experimental/itk/privat/build/tree.html");
-			//vscode.commands.executeCommand("extension.preview",["/home/kac2st/experimental/itk/privat/build/tree.html"]);
-			vscode.window.showInformationMessage("Check Dependency Tree.");
-			//let out = execSync(
-			//	cmd,
-			//	{"cwd" : buildDir}
-			//);
+			let treePath = vscode.Uri.file(path.join(ws,"build","tree.html"));
+			vscode.workspace.openTextDocument(treePath).then(
+				textDoc => {
+					vscode.window.showTextDocument(textDoc,1,true).then(
+						textEditor => {
+							if (vscode.window.visibleTextEditors.length === 1) {
+								vscode.commands.executeCommand("extension.preview");
+								vscode.window.showInformationMessage("Show Dependency Tree.");
+							}
+							else {
+								vscode.window.showInformationMessage("Generated Dependency Tree.");
+							}
+							
+						}
+					);
+				}
+			);
 		}
 	});
 	context.subscriptions.push(disposable);
 
+	disposable = vscode.commands.registerCommand('conan-do.genDoxy', () => {
+		if(vscode.workspace.workspaceFolders !== undefined) {
+			let ws = vscode.workspace.workspaceFolders[0].uri.fsPath;
+			conanOut.show();
+			conanDo.generateDoxygen(ws);
+			let doc = path.join(ws,"html","index.html");
+			vscode.workspace.openTextDocument(doc).then(
+				textDoc => {
+					vscode.window.showTextDocument(textDoc,1,true).then(
+						textEditor => {
+							if (vscode.window.visibleTextEditors.length === 1) {
+								vscode.commands.executeCommand("extension.preview");
+								vscode.window.showInformationMessage("Show Doxy Documentation.");
+							}
+							else {
+								vscode.window.showInformationMessage("Generated Doxy Documentation.");
+							}
+							
+						}
+					);
+				}
+			);
+		}
+	});
+	context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated

@@ -4,6 +4,8 @@ import * as Path from 'path';
 import path = require('path');
 import * as os from 'os';
 import { execSync } from 'child_process';
+import * as Doxy from './doxy_conf';
+import * as vscode from 'vscode';
 
 
 class PathCreation {
@@ -28,6 +30,11 @@ class PathCreation {
         );
         return path.join(dirPath,fileName);
     };
+    public static rmIfExist(filePath : string) {
+        if (fs.existsSync(filePath)) {
+            fs.rmSync(filePath);
+        }
+    }
 }
 
 export class ConanTemplateGen {
@@ -156,7 +163,42 @@ export class ConanTemplateGen {
                 Code.buildTestSh            
             )
         );
+        
+        // profiles
+        let profilePath = path.join(this.conanRoot,"profiles");
+        createdFiles.push(
+            PathCreation.createFile(
+                profilePath,
+                "sani",
+                Code.saniProfi
+            )
+        );
 
         return createdFiles;
+    }
+
+    public generateDoxyGen(projectRoot : string) {
+        if (!fs.existsSync(path.join(projectRoot,"doxy.conf"))) {
+            PathCreation.createFile(
+                    projectRoot,
+                    "doxy.conf",
+                    Doxy.doxygen            
+            );
+        };
+        PathCreation.rmDir(path.join(projectRoot,"html"));
+        if (!fs.existsSync(path.join(projectRoot,"build","doxygen","bin","doxygen"))) {
+            if (!fs.existsSync(path.join(projectRoot,"build"))) {
+                PathCreation.createDir(path.join(projectRoot,"build"));
+            }
+            execSync(
+                "conan install -g deploy doxygen/1.9.2@_/_",
+                {"cwd" : path.join(projectRoot,"build")}
+            );
+        }
+        let cmd =  `${path.join(projectRoot,"build","doxygen","bin","doxygen")} ${path.join(projectRoot,"doxy.conf")}`;
+        let out = execSync(
+            cmd,
+            {"cwd" : projectRoot}
+        ).toString();
     }
 }

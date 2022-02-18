@@ -261,6 +261,19 @@ conan install -pr:h=default -pr:b=default -s build_type=$2 .. --build=missing
 conan build ..
 `;
 
+export const saniProfi = `
+Configuration for profile sani:
+
+[settings]
+[options]
+[conf]
+[build_requires]
+[env]
+CXX_FLAGS=-fsanitize=address -fsanitize=leak -fsanitize=thread
+C_FLAGS=-fsanitize=address -fsanitize=leak -fsanitize=thread
+LDFLAGS=-fsanitize=address -fsanitize=leak -fsanitize=thread
+`;
+
 export const launch = `
 {
     // Use IntelliSense to learn about possible attributes.
