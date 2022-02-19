@@ -7,12 +7,26 @@ import * as path from 'path';
 import { Project } from './Project';
 import { ConanDo } from './ConanDo';
 import {VSCodeTerminal } from './VSCodeTerminal';
-import * as fs from 'fs';
-import { execSync } from 'child_process';
+import {ConanTaskProvider} from './ConanTaskProvider';
+
+let conanTaskProvider: vscode.Disposable | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
 	
-	let conanOut = vscode.window.createTerminal("Conan-Do");
+	let conanOut	= vscode.window.createTerminal("Conan-Do");
+	let coOut 		= vscode.window.createOutputChannel("conan-Do"); 
+	
+	const workspaceRoot = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
+		? vscode.workspace.workspaceFolders[0].uri.fsPath : undefined;
+	if (!workspaceRoot) {
+		return;
+	}
+		
+	conanTaskProvider = vscode.tasks.registerTaskProvider(
+		ConanTaskProvider.conanType, 
+		new ConanTaskProvider(workspaceRoot)
+	);
+	
 	let conanRoot  = path.join(os.homedir(),".conan");
 	let project = vscode.workspace.workspaceFolders![0].uri.fsPath;
 	let conanDo = new ConanDo(
@@ -146,4 +160,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	if (conanTaskProvider) {
+		conanTaskProvider.dispose();
+	}
+}

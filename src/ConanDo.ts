@@ -73,6 +73,9 @@ export class ConanDo {
         PathHelper.rmDir(this.docDir);
         PathHelper.rmFileIfExist(this.tree);
     }
+    private removeTestBuild() {
+        PathHelper.rmDir(this.testBuildDir);
+    }
     private removeCMakePaths(postfixBuildDir : string = "") {
         let cmakeBuildDirs =  fs.readdirSync(this.projectDir, { withFileTypes: true })
                             .filter(dirent => dirent.isDirectory() )
@@ -191,6 +194,7 @@ export class ConanDo {
         this.removeBuildFiles();
         this.removeCMakePaths();
         this.removeDocFolder();
+        this.removeTestBuild();
     }
     public generateDepTree(projectRoot : string) {
         let buildDir = path.join(projectRoot,"build");

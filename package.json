@@ -16,8 +16,9 @@
     "onCommand:conan-do.buildRelease",
     "onCommand:conan-do.clean",
     "onCommand:conan-do.genDepTree",
-    "onCommand:conan-do.genDoxy"
-  ],
+    "onCommand:conan-do.genDoxy",
+		"onCommand:workbench.action.tasks.runTask"
+	],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -48,6 +49,10 @@
       {
         "command": "conan-do.genDoxy",
         "title": "Conan-Do : Generate Doxygen Docu"
+      },
+      {
+        "command": "conan-do.cppcheck",
+        "title": "Conan-Do : CppCheck"
       }
     ]
   },
