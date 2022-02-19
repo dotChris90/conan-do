@@ -1,13 +1,12 @@
-import {ILog} from './ILog';
+import {ITerminal} from './ITerminal';
 import * as vscode from 'vscode';
 
-export class VSCodeTerminal implements ILog {
+export class VSCodeTerminal implements ITerminal {
     private terminal : vscode.Terminal;
     constructor(terminal : vscode.Terminal) {
         this.terminal = terminal;
     }
-    writeOut(text: string): boolean {
-        
-        return true;
-    };
+    execCmd(cmd: string,): void {
+        this.terminal.sendText(cmd);
+    }
 }

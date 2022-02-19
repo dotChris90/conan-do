@@ -6,6 +6,7 @@ import * as fs_extra from 'fs-extra';
 import * as Conan from './ConanTemplateGen';
 import { Project } from './Project';
 import {ILog} from './ILog';
+import {ITerminal} from './ITerminal';
 import * as Doxy from './doxy_conf';
 
 class CONFIG {
@@ -28,7 +29,11 @@ class PathHelper {
     }
     public static rmDir(dirPath : string) {
         if (fs.existsSync(dirPath)) {
-            fs.rmdirSync(dirPath, { recursive: true });
+            try {
+                fs.rmdirSync(dirPath, { recursive: true });   
+            } catch (error) {
+                let a = 1;
+            }
         }
     };
     public static rmFileIfExist(filePath : string) {
@@ -40,6 +45,7 @@ class PathHelper {
 
 export class ConanDo {
     private log : ILog;
+    private terminal : ITerminal;
     private conanRoot : string;
     private projectDir : string;
     private buildDir : string;
@@ -48,8 +54,11 @@ export class ConanDo {
     private buildFiles : string[];
     private docDir : string;
     private tree : string;
-    constructor(log : ILog, conanRoot : string, projectDir : string) {
+    private cppcheckBin : string;
+    private srcDir : string;
+    constructor(log : ILog, terminal : ITerminal, conanRoot : string, projectDir : string) {
         this.log = log;
+        this.terminal = terminal;
         this.conanRoot = conanRoot;
         this.projectDir = projectDir;
         this.buildDir = path.join(projectDir,"build");
@@ -61,6 +70,8 @@ export class ConanDo {
         });
         this.docDir = path.join(this.projectDir,"html");
         this.tree = path.join(this.buildDir,"tree.html");
+        this.cppcheckBin = path.join(this.buildDir,"cppcheck","bin","cppcheck");
+        this.srcDir = path.join(this.projectDir,"src");
     }
     private removeBuildFiles() {
         if (fs.existsSync(this.buildDir)) {
@@ -108,14 +119,6 @@ export class ConanDo {
             cmd,
             {"cwd" : dirPath}
         );
-        cmd = `chmod +x ${path.join(dirPath,".vscode","build.sh")}`;
-        out = child_process.execSync(
-            cmd
-        );
-        cmd = `chmod +x ${path.join(dirPath,".vscode","build_test.sh")}`;
-        out = child_process.execSync(
-            cmd
-        );
     }
     public importDepdendencies() {
         fs.mkdirSync(
@@ -123,19 +126,11 @@ export class ConanDo {
             { recursive: true }
         );
         let cmd = "conan install -pr:h=default -pr:b=default -g deploy .. --build=missing";
-        let out = child_process.execSync(
-                    cmd,
-                    {"cwd" : this.buildDir}
-        );
-        this.log.writeOut(out.toString());
-
+        this.terminal.execCmd(`cd ${this.buildDir}`);
+        this.terminal.execCmd(cmd);
         cmd = "conan install -pr:h=default -pr:b=default -g deploy ../test_package/ --build=missing";
-        out = child_process.execSync(
-            cmd,
-            {"cwd" : this.buildDir}
-        );
-        this.log.writeOut(out.toString());
-
+        this.terminal.execCmd(cmd);
+        this.terminal.execCmd(`cd ${this.projectDir}`);
         let packages =  fs.readdirSync(this.buildDir, { withFileTypes: true })
                             .filter(dirent => dirent.isDirectory() )
                             .filter(dirent => !(dirent.name === "include"))
@@ -148,7 +143,6 @@ export class ConanDo {
             let includeIdx = path.join(this.buildDir,packageIdx,"include");
             PathHelper.copyIfExist(includeIdx,path.join(this.buildDir,"include"));
         });
-        this.log.writeOut(`Header now present at : ${path.join(this.buildDir,"include")}`);
     }
     public getProfiles() : string[] {
         let cmd = "conan profile list";
@@ -161,7 +155,7 @@ export class ConanDo {
         profiles.unshift("default");
         return profiles;
     }
-    public buildRelease(buildProfile : string, hostProfile : string) {
+    public build(buildProfile : string, hostProfile : string, type : string) {
         fs.mkdirSync(
             this.buildDir,
             { recursive: true }
@@ -172,23 +166,26 @@ export class ConanDo {
         PathHelper.rmFileIfExist(path.join(this.buildDir,"graph_info.json"));
         let cmakeBuildDirs =  fs.readdirSync(this.projectDir, { withFileTypes: true })
                             .filter(dirent => dirent.isDirectory() )
-                            .filter(dirent => dirent.name === "cmake-build-release")
+                            .filter(dirent => dirent.name === `cmake-build-${type.toLowerCase()}`)
                             .map(dirent => dirent.name);
         cmakeBuildDirs.forEach(cmakeBuildDir => {
             PathHelper.rmDir(cmakeBuildDir);   
         });
-        let cmd = `conan install -pr:h=${hostProfile} -pr:b=${buildProfile} -s build_type=Release .. --build=missing`;
-        let out = child_process.execSync(
-            cmd,
-            {"cwd" : this.buildDir}
-        );
-        this.log.writeOut(out.toString());
+        let cmd = `conan install -pr:h=${hostProfile} -pr:b=${buildProfile} -s build_type=${type} .. --build=missing`;
+        this.terminal.execCmd(`cd ${this.buildDir}`);
+        this.terminal.execCmd(cmd);
         cmd = "conan build ..";
-        out = child_process.execSync(
-            cmd,
-            {"cwd" : this.buildDir}
-        );
-        this.log.writeOut(out.toString());
+        this.terminal.execCmd(cmd);
+        this.terminal.execCmd(`cd ${this.projectDir}`);
+        const testPkgBuild = path.join(this.projectDir,"test_package","build");
+        this.terminal.execCmd(`conan create . -pr:h=${hostProfile} -pr:b=${buildProfile} -s build_type=${type} --build=missing`);
+        let buildDirs = fs.readdirSync(testPkgBuild);
+		let dir = buildDirs[0];
+		let testBin = path.join(testPkgBuild,dir,"bin","pkg_test");
+		fs.linkSync(
+			testBin,
+			path.join(testPkgBuild,"pkg_test"),
+		);
     }
     public clean()  {
         this.removeBuildFiles();
@@ -212,6 +209,17 @@ export class ConanDo {
     }
     public generateDoxygen(projectRoot : string) {
         let generator = new Conan.ConanTemplateGen(this.conanRoot,"default");
-        generator.generateDoxyGen(projectRoot);
+        generator.generateDoxyGen(projectRoot,this.terminal);
+    }
+    public analyzeCppCheck() {
+        let cmd  = "";
+        if (!fs.existsSync(this.cppcheckBin)) {
+            cmd = `conan install -g deploy cppcheck/2.6@_/_`;
+            this.terminal.execCmd(`cd ${this.buildDir}`);
+            this.terminal.execCmd(cmd);
+            this.terminal.execCmd(`cd ${this.projectDir}`);
+        }        
+        cmd = `${this.cppcheckBin} ${this.srcDir}`;
+        this.terminal.execCmd(cmd);
     }
 }

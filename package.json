@@ -14,9 +14,11 @@
     "onCommand:conan-do.new",
     "onCommand:conan-do.importDeps",
     "onCommand:conan-do.buildRelease",
+    "onCommand:conan-do.buildDebug",
     "onCommand:conan-do.clean",
     "onCommand:conan-do.genDepTree",
     "onCommand:conan-do.genDoxy",
+    "onCommand:conan-do.cppcheck",
 		"onCommand:workbench.action.tasks.runTask"
 	],
   "main": "./out/extension.js",
@@ -37,6 +39,10 @@
       {
         "command": "conan-do.buildRelease",
         "title": "Conan-Do : Build Release"
+      },
+      {
+        "command": "conan-do.buildDebug",
+        "title": "Conan-Do : Build Debug"
       },
       {
         "command": "conan-do.clean",

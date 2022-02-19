@@ -235,35 +235,7 @@ int main(int argc, char **argv) {
 }
 `;
 
-export const buildTestSh = `
-#!/bin/sh
-
-cd $1
-rm -rf $1/test_package/build/*
-conan create -pr:h=default -pr:b=default -s build_type=Debug . --build=missing
-
-ln -s $(find $1/test_package/build/ -name 'pkg_test') $1/test_package/build/pkg_test
-`;
-
-export const buildDebug = `
-#!/bin/sh
-
-rm -f $1/build/conanbuildinfo.txt
-rm -f $1/build/conan.lock
-rm -f $1/build/graph_info.json
-rm -f $1/build/conaninfo.txt
-
-rm -rf $1/cmake-build-$3
-mkdir -p $1/build
-
-cd $1/build
-conan install -pr:h=default -pr:b=default -s build_type=$2 .. --build=missing
-conan build ..
-`;
-
 export const saniProfi = `
-Configuration for profile sani:
-
 [settings]
 [options]
 [conf]
@@ -290,7 +262,6 @@ export const launch = `
             "stopAtEntry": true,
             "cwd": "\${fileDirname}",
             "environment": [],
-            "preLaunchTask": "C++ build Debug",
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
@@ -311,7 +282,6 @@ export const launch = `
             "stopAtEntry": true,
             "cwd": "\${fileDirname}",
             "environment": [],
-            "preLaunchTask": "Build - Test - Type=Debug",
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
@@ -323,42 +293,6 @@ export const launch = `
             ],
             "miDebuggerPath": "/usr/bin/gdb"
         }
-    ]
-}
-`;
-
-export const tasks = `
-{
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "type": "shell",
-        "label": "C++ build Debug",
-        "command": "\${workspaceFolder}/.vscode/build.sh \${workspaceFolder} Debug debug",
-        "args": [],
-        "options": {
-          "cwd": "\${workspaceFolder}"
-        },
-        "problemMatcher": [],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        }
-      },
-      {
-        "type": "shell",
-        "label": "Build - Test - Type=Debug",
-        "command": "\${workspaceFolder}/.vscode/build_test.sh \${workspaceFolder}",
-        "args": [],
-        "options": {
-          "cwd": "\${workspaceFolder}"
-        },
-        "problemMatcher": [],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        }
-      }
     ]
 }
 `;

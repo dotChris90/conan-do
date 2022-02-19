@@ -6,6 +6,7 @@ import * as os from 'os';
 import { execSync } from 'child_process';
 import * as Doxy from './doxy_conf';
 import * as vscode from 'vscode';
+import { ITerminal } from './ITerminal';
 
 
 class PathCreation {
@@ -136,34 +137,10 @@ export class ConanTemplateGen {
         createdFiles.push(
             PathCreation.createFile(
                 vscodeDir,
-                "tasks.json",
-                Code.tasks            
-            )
-        );
-        createdFiles.push(
-            PathCreation.createFile(
-                vscodeDir,
                 "launch.json",
                 Code.launch            
             )
         );
-
-        createdFiles.push(
-            PathCreation.createFile(
-                vscodeDir,
-                "build.sh",
-                Code.buildDebug            
-            )
-        );
-
-        createdFiles.push(
-            PathCreation.createFile(
-                vscodeDir,
-                "build_test.sh",
-                Code.buildTestSh            
-            )
-        );
-        
         // profiles
         let profilePath = path.join(this.conanRoot,"profiles");
         createdFiles.push(
@@ -173,11 +150,10 @@ export class ConanTemplateGen {
                 Code.saniProfi
             )
         );
-
         return createdFiles;
     }
 
-    public generateDoxyGen(projectRoot : string) {
+    public generateDoxyGen(projectRoot : string, terminal : ITerminal) {
         if (!fs.existsSync(path.join(projectRoot,"doxy.conf"))) {
             PathCreation.createFile(
                     projectRoot,
@@ -196,9 +172,6 @@ export class ConanTemplateGen {
             );
         }
         let cmd =  `${path.join(projectRoot,"build","doxygen","bin","doxygen")} ${path.join(projectRoot,"doxy.conf")}`;
-        let out = execSync(
-            cmd,
-            {"cwd" : projectRoot}
-        ).toString();
+        terminal.execCmd(cmd);
     }
 }

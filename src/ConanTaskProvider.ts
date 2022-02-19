@@ -7,7 +7,6 @@ import * as fs from 'fs';
 import * as cp from 'child_process';
 import * as vscode from 'vscode';
 import {PathHelper} from './PathHelper';
-import { runInThisContext } from 'vm';
 
 export class ConanTaskProvider implements vscode.TaskProvider {
 	static conanType = 'conan';
@@ -112,7 +111,7 @@ async function getConanTasks(): Promise<vscode.Task[]> {
 		//
 		// Installation 
 		//
-		let taskName = 'install debug';
+		let taskName = 'conan install : Debug';
 		let kind: ConanTaskDefinition = {
             type: 'conan',
             task: taskName
@@ -126,7 +125,7 @@ async function getConanTasks(): Promise<vscode.Task[]> {
         );
 		task.group = vscode.TaskGroup.Build;
 		result.push(task);
-		taskName = 'install release';
+		taskName = 'conan install : Release';
 		kind = {
             type: 'conan',
             task: taskName
@@ -143,7 +142,7 @@ async function getConanTasks(): Promise<vscode.Task[]> {
 		//
 		task.group = vscode.TaskGroup.Build;
 		result.push(task);
-		taskName = 'build conan';
+		taskName = 'conan-build';
 		kind = {
             type: 'conan',
             task: taskName
@@ -156,6 +155,7 @@ async function getConanTasks(): Promise<vscode.Task[]> {
             new vscode.ShellExecution('conan build ..',{"cwd":buildDir})
         );
 		task.group = vscode.TaskGroup.Build;
+		let build_task = task;
 		result.push(task);
 		//
 		// Create
@@ -207,6 +207,12 @@ async function getConanTasks(): Promise<vscode.Task[]> {
 					let out = cp.execFileSync(bin).toString();
 					let a = 1;
 				}
+			}
+			if (e.execution.task.name === 'conan install : Debug') {
+				vscode.tasks.executeTask(build_task);
+			}
+			if (e.execution.task.name === 'conan install : Release') {
+				vscode.tasks.executeTask(build_task);
 			}
 		});
 	}
