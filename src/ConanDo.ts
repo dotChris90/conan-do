@@ -126,11 +126,15 @@ export class ConanDo {
             { recursive: true }
         );
         let cmd = "conan install -pr:h=default -pr:b=default -g deploy .. --build=missing";
-        this.terminal.execCmd(`cd ${this.buildDir}`);
-        this.terminal.execCmd(cmd);
+        child_process.execSync(
+            cmd,
+            {"cwd" : this.buildDir}
+        );
         cmd = "conan install -pr:h=default -pr:b=default -g deploy ../test_package/ --build=missing";
-        this.terminal.execCmd(cmd);
-        this.terminal.execCmd(`cd ${this.projectDir}`);
+        child_process.execSync(
+            cmd,
+            {"cwd" : this.buildDir}
+        );
         let packages =  fs.readdirSync(this.buildDir, { withFileTypes: true })
                             .filter(dirent => dirent.isDirectory() )
                             .filter(dirent => !(dirent.name === "include"))

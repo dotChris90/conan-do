@@ -7,6 +7,7 @@ import { execSync } from 'child_process';
 import * as Doxy from './doxy_conf';
 import * as vscode from 'vscode';
 import { ITerminal } from './ITerminal';
+import { clangFormat } from './clang-format';
 
 
 class PathCreation {
@@ -71,6 +72,13 @@ export class ConanTemplateGen {
                 templatePath,
                 "CMakeLists.txt",
                 Code.CMakeFile            
+            )
+        );
+        createdFiles.push(
+            PathCreation.createFile(
+                templatePath,
+                ".clang-format",
+                clangFormat           
             )
         );
 
@@ -139,6 +147,14 @@ export class ConanTemplateGen {
                 vscodeDir,
                 "launch.json",
                 Code.launch            
+            )
+        );
+        PathCreation.createDir(vscodeDir);
+        createdFiles.push(
+            PathCreation.createFile(
+                vscodeDir,
+                "settings.json",
+                Code.settings            
             )
         );
         // profiles

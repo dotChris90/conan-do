@@ -246,6 +246,43 @@ C_FLAGS=-fsanitize=address -fsanitize=leak -fsanitize=thread
 LDFLAGS=-fsanitize=address -fsanitize=leak -fsanitize=thread
 `;
 
+export const settings = `
+{
+    "C_Cpp.default.includePath": [
+        "build/include/**",
+        "src/**"
+    ],
+    "C_Cpp.clang_format_style": "file",
+    "C_Cpp.codeAnalysis.clangTidy.headerFilter": "build/include/**;src/**",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.exclude": {
+        "build/**": true,
+        "test_package/**": true,
+        "test/**": true
+    },
+    "C_Cpp.codeAnalysis.runAutomatically": true,
+    "editor.autoClosingBrackets": "always",
+    "editor.formatOnSave": true,
+    "C_Cpp.codeAnalysis.clangTidy.checks.enabled": [
+        "bugprone-*",
+        "cert-*",
+        "concurrency-*",
+        "hicpp-*",
+        "misc-*",
+        "google-*",
+        "modernize-*",
+        "cppcoreguidelines-*",
+        "clang-analyzer-*",
+        "clang-analyzer-core.*",
+        "clang-analyzer-cplusplus.*",
+        "clang-analyzer-deadcode.DeadStores",
+        "clang-analyzer-optin.*",
+        "clang-analyzer-security.*",
+        "clang-analyzer-valist.*"
+    ]
+}
+`;
+
 export const launch = `
 {
     // Use IntelliSense to learn about possible attributes.
