@@ -3,14 +3,42 @@
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import {ChildProcess, spawn} from 'child_process';
 
 import { Project } from './Project';
 import { ConanDo } from './ConanDo';
 import { CodeOutputChannel } from './CodeOutputChannel';
 import {ConanTaskProvider} from './ConanTaskProvider';
 import {VSCodeTerminal} from './VSCodeTerminal';
+import {Executor} from './Executor';
 
 let conanTaskProvider: vscode.Disposable | undefined;
+
+let conanOut : vscode.OutputChannel;
+
+/*
+export default function conanCreate() {
+	// *** Return the promise
+	return new Promise(function (resolve, reject) {
+	  const args = ['create','.'];
+	  const process = spawn('conan', args, { cwd: "/home/kac2st/experimental/itk/privat", shell: true });
+	  process.stdout.on("data", (data) => {
+		conanOut.append(data.toString());
+	  });
+	  process.stderr.on("data", (data) => {
+		conanOut.append(data.toString());
+	  });
+	  process.on('close', function (code) { // Should probably be 'exit', not 'close'
+		// *** Process completed
+		resolve(code);
+	  });
+	  process.on('error', function (err) {
+		// *** Process creation failed
+		reject(err);
+	  });
+	});
+  }
+*/
 
 export function activate(context: vscode.ExtensionContext) {
 	// env
@@ -20,13 +48,32 @@ export function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 	let conanRoot  = path.join(os.homedir(),".conan");
-	let conanTerm = vscode.window.createTerminal("Conan-Do");
-	conanTerm.show();
-	let conanOut = vscode.window.createOutputChannel("Conan-Do");
+	//let conanTerm = vscode.window.createTerminal("Conan-Do");
+	//conanTerm.show();
+	conanOut = vscode.window.createOutputChannel("Conan-Do");
 	conanTaskProvider = vscode.tasks.registerTaskProvider(
 		ConanTaskProvider.conanType, 
 		new ConanTaskProvider(workspaceRoot)
 	);
+
+	conanOut.show();
+
+	let exec = new Executor(new CodeOutputChannel(conanOut));
+	let conanCreate = exec.execPromise("conan",["create","."],"/home/kac2st/experimental/itk/privat");
+	//let conanCreate  = spawn("conan", ["create","."], { cwd: "/home/kac2st/experimental/itk/privat", shell: true });
+
+	//conanCreate.stdout.on("data", (data) => {
+	//	conanOut.append(data.toString());
+	//});
+	//conanCreate.stderr.on("data", (data) => {
+    //conanOut.append(data.toString());
+	//});
+
+	conanCreate.then( () => {
+		conanOut.appendLine("Hahahahahah!!!!");
+	});
+
+	let conanTerm = vscode.window.createTerminal({ name: 'Conan-Do' });
 	let conanDo = new ConanDo(
 		new CodeOutputChannel(conanOut),
 		new VSCodeTerminal(conanTerm),

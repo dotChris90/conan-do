@@ -32,6 +32,7 @@ class {{package_name}}Conan(ConanFile):
     
     def requirements(self):
         self.requires("boost/1.75.0")
+        self.requires("ms-gsl/4.0.0")
 
     def layout(self):
         cmake_layout(self)

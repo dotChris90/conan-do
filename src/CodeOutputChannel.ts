@@ -10,4 +10,7 @@ export class CodeOutputChannel implements ILog {
         this.terminal.append(text);
         return true;
     };
+    writeErr(text: string): void {
+        // ToDO : implement error
+    }
 }
