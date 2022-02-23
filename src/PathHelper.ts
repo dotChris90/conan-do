@@ -39,7 +39,7 @@ export class DirHelper {
     };
     public static rmDir(dirPath: string) {
         if (fs.existsSync(dirPath)) {
-            fs.rmdirSync(dirPath, { recursive: true });
+            fs_extra.rmdirSync(dirPath, { recursive: true });
         }
     };
 }
