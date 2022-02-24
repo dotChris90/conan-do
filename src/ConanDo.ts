@@ -5,7 +5,6 @@ import * as fs from 'fs';
 import * as Conan from './ConanTemplateGen';
 import { Project } from './Project';
 import { ILog } from './ILog';
-import { ITerminal } from './ITerminal';
 import { Executor } from './Executor';
 import { ConanAPI } from './ConanAPI';
 import * as PathHelper from './PathHelper';
@@ -209,11 +208,11 @@ export class ConanDo {
                 "doxygen/1.9.2@_/_",
                 true
             ).then(() => {
-                return this.exec.execPromise(cmd, args);
+                return this.exec.execPromise(cmd, args, this.projectDir, {}, true);
             });
         }
         else {
-            return this.exec.execPromise(cmd, args);
+            return this.exec.execPromise(cmd, args, this.projectDir, {}, true);
         }
     }
     public analyzeCppCheck() {

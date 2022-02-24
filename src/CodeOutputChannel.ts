@@ -6,10 +6,15 @@ export class CodeOutputChannel implements ILog {
     constructor(terminal: vscode.OutputChannel) {
         this.terminal = terminal;
     }
-    writeOut(text: string): boolean {
-        this.terminal.show();
+    writeOut(text: string, withDate = false): void {
+        if (withDate) {
+            this.terminal.appendLine("");
+            this.terminal.appendLine("\n------------------------------------------------------------------------------");
+            this.terminal.appendLine(`|----------${new Date(Date.now())}---------|`);
+            this.terminal.appendLine("------------------------------------------------------------------------------");
+            this.terminal.appendLine("");
+        }
         this.terminal.append(text);
-        return true;
     };
     writeErr(text: string): void {
         // ToDO : implement error

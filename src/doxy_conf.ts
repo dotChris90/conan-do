@@ -1,5 +1,5 @@
-export const doxygen = 
-`# Doxyfile 1.9.1
+export const doxygen = `
+# Doxyfile 1.9.1
 
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project.
@@ -12,7 +12,7 @@ export const doxygen =
 # TAG = value [value, ...]
 # For lists, items can also be appended using:
 # TAG += value [value, ...]
-# Values that contain spaces should be placed between quotes (\" \").
+# Values that contain spaces should be placed between quotes (" ").
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -127,17 +127,7 @@ REPEAT_BRIEF           = YES
 # the entity):The $name class, The $name widget, The $name file, is, provides,
 # specifies, contains, represents, a, an and the.
 
-ABBREVIATE_BRIEF       = "The $name class" \
-                         "The $name widget" \
-                         "The $name file" \
-                         is \
-                         provides \
-                         specifies \
-                         contains \
-                         represents \
-                         a \
-                         an \
-                         the
+ABBREVIATE_BRIEF       = "The $name class"                          "The $name widget"                          "The $name file"                          is                          provides                          specifies                          contains                          represents                          a                          an                          the
 
 # If the ALWAYS_DETAILED_SEC and REPEAT_BRIEF tags are both set to YES then
 # doxygen will generate a detailed section even if there is only a brief
@@ -211,7 +201,7 @@ JAVADOC_BANNER         = NO
 # If the QT_AUTOBRIEF tag is set to YES then doxygen will interpret the first
 # line (until the first dot) of a Qt-style comment as the brief description. If
 # set to NO, the Qt-style will behave just like regular Qt-style comments (thus
-# requiring an explicit \brief command for a brief description.)
+# requiring an explicit rief command for a brief description.)
 # The default value is: NO.
 
 QT_AUTOBRIEF           = NO
@@ -260,15 +250,15 @@ TAB_SIZE               = 4
 # name=value
 # For example adding
 # "sideeffect=@par Side Effects:"
-# will allow you to put the command \sideeffect (or @sideeffect) in the
+# will allow you to put the command sideeffect (or @sideeffect) in the
 # documentation, which will result in a user-defined paragraph with heading
 # "Side Effects:". You can put nextline in the value part of an alias to insert
 # newlines (in the resulting output). You can put ^^ in the value part of an
 # alias to insert a newline as if a physical newline was in the original file.
 # When you need a literal { or } or , in the value part of an alias you have to
-# escape them by means of a backslash (\), this can lead to conflicts with the
-# commands \{ and \} for these it is advised to use the version @{ and @} or use
-# a double escape (\\{ and \\})
+# escape them by means of a backslash (), this can lead to conflicts with the
+# commands { and } for these it is advised to use the version @{ and @} or use
+# a double escape (\{ and \})
 
 ALIASES                =
 
@@ -402,7 +392,7 @@ DISTRIBUTE_GROUP_DOC   = NO
 
 # If one adds a struct or class to a group and this option is enabled, then also
 # any nested class or struct is added to the same group. By default this option
-# is disabled and one has to add nested compounds explicitly via \ingroup.
+# is disabled and one has to add nested compounds explicitly via ingroup.
 # The default value is: NO.
 
 GROUP_NESTED_COMPOUNDS = NO
@@ -417,7 +407,7 @@ GROUP_NESTED_COMPOUNDS = NO
 SUBGROUPING            = YES
 
 # When the INLINE_GROUPED_CLASSES tag is set to YES, classes, structs and unions
-# are shown inside the group in which they are included (e.g. using \ingroup)
+# are shown inside the group in which they are included (e.g. using ingroup)
 # instead of on a separate page (for HTML and Man pages) or section (for LaTeX
 # and RTF).
 #
@@ -575,7 +565,7 @@ HIDE_FRIEND_COMPOUNDS  = NO
 HIDE_IN_BODY_DOCS      = NO
 
 # The INTERNAL_DOCS tag determines if documentation that is typed after a
-# \internal command is included. If the tag is set to NO then the documentation
+# internal command is included. If the tag is set to NO then the documentation
 # will be excluded. Set it to YES to include the internal documentation.
 # The default value is: NO.
 
@@ -691,33 +681,33 @@ SORT_BY_SCOPE_NAME     = NO
 STRICT_PROTO_MATCHING  = NO
 
 # The GENERATE_TODOLIST tag can be used to enable (YES) or disable (NO) the todo
-# list. This list is created by putting \todo commands in the documentation.
+# list. This list is created by putting 	odo commands in the documentation.
 # The default value is: YES.
 
 GENERATE_TODOLIST      = YES
 
 # The GENERATE_TESTLIST tag can be used to enable (YES) or disable (NO) the test
-# list. This list is created by putting \test commands in the documentation.
+# list. This list is created by putting 	est commands in the documentation.
 # The default value is: YES.
 
 GENERATE_TESTLIST      = YES
 
 # The GENERATE_BUGLIST tag can be used to enable (YES) or disable (NO) the bug
-# list. This list is created by putting \bug commands in the documentation.
+# list. This list is created by putting ug commands in the documentation.
 # The default value is: YES.
 
 GENERATE_BUGLIST       = YES
 
 # The GENERATE_DEPRECATEDLIST tag can be used to enable (YES) or disable (NO)
-# the deprecated list. This list is created by putting \deprecated commands in
+# the deprecated list. This list is created by putting deprecated commands in
 # the documentation.
 # The default value is: YES.
 
 GENERATE_DEPRECATEDLIST= YES
 
 # The ENABLED_SECTIONS tag can be used to enable conditional documentation
-# sections, marked by \if <section_label> ... \endif and \cond <section_label>
-# ... \endcond blocks.
+# sections, marked by if <section_label> ... endif and cond <section_label>
+# ... endcond blocks.
 
 ENABLED_SECTIONS       =
 
@@ -726,7 +716,7 @@ ENABLED_SECTIONS       =
 # documentation. If the initializer consists of more lines than specified here
 # it will be hidden. Use a value of 0 to hide initializers completely. The
 # appearance of the value of individual variables and macros / defines can be
-# controlled using \showinitializer or \hideinitializer command in the
+# controlled using showinitializer or hideinitializer command in the
 # documentation regardless of this setting.
 # Minimum value: 0, maximum value: 10000, default value: 30.
 
@@ -782,7 +772,7 @@ LAYOUT_FILE            =
 # to be installed. See also https://en.wikipedia.org/wiki/BibTeX for more info.
 # For LaTeX the style of the bibliography can be controlled using
 # LATEX_BIB_STYLE. To use this feature you need bibtex and perl available in the
-# search path. See also \cite for info how to create references.
+# search path. See also cite for info how to create references.
 
 CITE_BIB_FILES         =
 
@@ -865,7 +855,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  =
+INPUT                  =  src/
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -894,51 +884,7 @@ INPUT_ENCODING         = UTF-8
 # *.py, *.pyw, *.f90, *.f95, *.f03, *.f08, *.f18, *.f, *.for, *.vhd, *.vhdl,
 # *.ucf, *.qsf and *.ice.
 
-FILE_PATTERNS          = *.c \
-                         *.h \
-                         *.hpp \
-                         *.cc \
-                         *.cxx \
-                         *.cpp \
-                         *.c++ \
-                         *.java \
-                         *.ii \
-                         *.ixx \
-                         *.ipp \
-                         *.i++ \
-                         *.inl \
-                         *.idl \
-                         *.ddl \
-                         *.odl \
-                         *.h \
-                         *.hh \
-                         *.hxx \
-                         *.hpp \
-                         *.h++ \
-                         *.cs \
-                         *.d \
-                         *.php \
-                         *.php4 \
-                         *.php5 \
-                         *.phtml \
-                         *.inc \
-                         *.m \
-                         *.markdown \
-                         *.md \
-                         *.mm \
-                         *.dox \
-                         *.f90 \
-                         *.f95 \
-                         *.f03 \
-                         *.f08 \
-                         *.f18 \
-                         *.f \
-                         *.for \
-                         *.vhd \
-                         *.vhdl \
-                         *.ucf \
-                         *.qsf \
-                         *.ice
+FILE_PATTERNS          = *.c                          *.h                          *.hpp                          *.cc                          *.cxx                          *.cpp                          *.c++                          *.java                          *.ii                          *.ixx                          *.ipp                          *.i++                          *.inl                          *.idl                          *.ddl                          *.odl                          *.h                          *.hh                          *.hxx                          *.hpp                          *.h++                          *.cs                          *.d                          *.php                          *.php4                          *.php5                          *.phtml                          *.inc                          *.m                          *.markdown                          *.md                          *.mm                          *.dox                          *.f90                          *.f95                          *.f03                          *.f08                          *.f18                          *.f                          *.for                          *.vhd                          *.vhdl                          *.ucf                          *.qsf                          *.ice
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -983,7 +929,7 @@ EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        =
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
-# that contain example code fragments that are included (see the \include
+# that contain example code fragments that are included (see the include
 # command).
 
 EXAMPLE_PATH           =
@@ -996,7 +942,7 @@ EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be
-# searched for input files to be used with the \include or \dontinclude commands
+# searched for input files to be used with the include or dontinclude commands
 # irrespective of the value of the RECURSIVE tag.
 # The default value is: NO.
 
@@ -1004,7 +950,7 @@ EXAMPLE_RECURSIVE      = NO
 
 # The IMAGE_PATH tag can be used to specify one or more files or directories
 # that contain images that are to be included in the documentation (see the
-# \image command).
+# image command).
 
 IMAGE_PATH             =
 
@@ -1145,7 +1091,7 @@ USE_HTAGS              = NO
 # If the VERBATIM_HEADERS tag is set the YES then doxygen will generate a
 # verbatim copy of the header file for each class for which an include is
 # specified. Set to NO to disable this.
-# See also: Section \class.
+# See also: Section class.
 # The default value is: YES.
 
 VERBATIM_HEADERS       = YES
@@ -1640,7 +1586,8 @@ FORMULA_FONTSIZE       = 10
 
 FORMULA_TRANSPARENT    = YES
 
-# The FORMULA_MACROFILE can contain LaTeX ewcommand and \renewcommand commands
+# The FORMULA_MACROFILE can contain LaTeX ewcommand and 
+enewcommand commands
 # to create new LaTeX commands to be used in formulas as building blocks. See
 # the section "Including formulas" for details.
 
@@ -1824,7 +1771,7 @@ LATEX_CMD_NAME         =
 MAKEINDEX_CMD_NAME     = makeindex
 
 # The LATEX_MAKEINDEX_CMD tag can be used to specify the command name to
-# generate index for LaTeX. In case there is no backslash (\) as first character
+# generate index for LaTeX. In case there is no backslash () as first character
 # it will be automatically added in the LaTeX code.
 # Note: This tag is used in the generated output file (.tex).
 # See also: MAKEINDEX_CMD_NAME for the part in the Makefile / make.bat.
@@ -1927,7 +1874,7 @@ PDF_HYPERLINKS         = YES
 
 USE_PDFLATEX           = YES
 
-# If the LATEX_BATCHMODE tag is set to YES, doxygen will add the \batchmode
+# If the LATEX_BATCHMODE tag is set to YES, doxygen will add the atchmode
 # command to the generated LaTeX files. This will instruct LaTeX to keep running
 # if errors occur, instead of asking the user for help. This option is also used
 # when generating formulas in HTML.
@@ -1955,7 +1902,7 @@ LATEX_SOURCE_CODE      = NO
 
 # The LATEX_BIB_STYLE tag can be used to specify the style to use for the
 # bibliography, e.g. plainnat, or ieeetr. See
-# https://en.wikipedia.org/wiki/BibTeX and \cite for more info.
+# https://en.wikipedia.org/wiki/BibTeX and cite for more info.
 # The default value is: plain.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
@@ -2346,7 +2293,7 @@ DIA_PATH               =
 # and usage relations if the target is undocumented or is not a class.
 # The default value is: YES.
 
-HIDE_UNDOC_RELATIONS   = YES
+HIDE_UNDOC_RELATIONS   = NO
 
 # If you set the HAVE_DOT tag to YES then doxygen will assume the dot tool is
 # available from the path. This tool is part of Graphviz (see:
@@ -2421,7 +2368,7 @@ GROUP_GRAPHS           = YES
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-UML_LOOK               = NO
+UML_LOOK               = YES
 
 # If the UML_LOOK tag is enabled, the fields and methods are shown inside the
 # class node. If there are many fields or methods and many nodes the graph may
@@ -2434,7 +2381,7 @@ UML_LOOK               = NO
 # Minimum value: 0, maximum value: 100, default value: 10.
 # This tag requires that the tag UML_LOOK is set to YES.
 
-UML_LIMIT_NUM_FIELDS   = 10
+UML_LIMIT_NUM_FIELDS   = 100
 
 # If the DOT_UML_DETAILS tag is set to NO, doxygen will show attributes and
 # methods without types and arguments in the UML graphs. If the DOT_UML_DETAILS
@@ -2464,7 +2411,7 @@ DOT_WRAP_THRESHOLD     = 17
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-TEMPLATE_RELATIONS     = NO
+TEMPLATE_RELATIONS     = YES
 
 # If the INCLUDE_GRAPH, ENABLE_PREPROCESSING and SEARCH_INCLUDES tags are set to
 # YES then doxygen will generate a graph for each documented file showing the
@@ -2489,8 +2436,8 @@ INCLUDED_BY_GRAPH      = YES
 #
 # Note that enabling this option will significantly increase the time of a run.
 # So in most cases it will be better to enable call graphs for selected
-# functions only using the \callgraph command. Disabling a call graph can be
-# accomplished by means of the command \hidecallgraph.
+# functions only using the callgraph command. Disabling a call graph can be
+# accomplished by means of the command hidecallgraph.
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
@@ -2501,8 +2448,8 @@ CALL_GRAPH             = YES
 #
 # Note that enabling this option will significantly increase the time of a run.
 # So in most cases it will be better to enable caller graphs for selected
-# functions only using the \callergraph command. Disabling a caller graph can be
-# accomplished by means of the command \hidecallergraph.
+# functions only using the callergraph command. Disabling a caller graph can be
+# accomplished by means of the command hidecallergraph.
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
@@ -2565,20 +2512,20 @@ INTERACTIVE_SVG        = YES
 DOT_PATH               =
 
 # The DOTFILE_DIRS tag can be used to specify one or more directories that
-# contain dot files that are included in the documentation (see the \dotfile
+# contain dot files that are included in the documentation (see the dotfile
 # command).
 # This tag requires that the tag HAVE_DOT is set to YES.
 
 DOTFILE_DIRS           =
 
 # The MSCFILE_DIRS tag can be used to specify one or more directories that
-# contain msc files that are included in the documentation (see the \mscfile
+# contain msc files that are included in the documentation (see the mscfile
 # command).
 
 MSCFILE_DIRS           =
 
 # The DIAFILE_DIRS tag can be used to specify one or more directories that
-# contain dia files that are included in the documentation (see the \diafile
+# contain dia files that are included in the documentation (see the diafile
 # command).
 
 DIAFILE_DIRS           =
@@ -2586,7 +2533,7 @@ DIAFILE_DIRS           =
 # When using plantuml, the PLANTUML_JAR_PATH tag should be used to specify the
 # path where java can find the plantuml.jar file. If left blank, it is assumed
 # PlantUML is not used or called during a preprocessing step. Doxygen will
-# generate a warning when it encounters a \startuml command in this case and
+# generate a warning when it encounters a startuml command in this case and
 # will not generate output for the diagram.
 
 PLANTUML_JAR_PATH      =
@@ -2662,4 +2609,5 @@ GENERATE_LEGEND        = YES
 # The default value is: YES.
 
 DOT_CLEANUP            = YES
+
 `;

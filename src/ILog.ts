@@ -1,4 +1,4 @@
 export interface ILog {
-    writeOut(text : string) : void;
-    writeErr(text : string) : void;
+    writeOut(text: string, withDate: boolean): void;
+    writeErr(text: string): void;
 }

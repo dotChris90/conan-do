@@ -8,10 +8,6 @@ import { ChildProcess, spawn } from 'child_process';
 import { Project } from './Project';
 import { ConanDo } from './ConanDo';
 import { CodeOutputChannel } from './CodeOutputChannel';
-import { ConanTaskProvider } from './ConanTaskProvider';
-import { VSCodeTerminal } from './VSCodeTerminal';
-import { Executor } from './Executor';
-import { ConanAPI } from './ConanAPI';
 
 let conanTaskProvider: vscode.Disposable | undefined;
 
@@ -26,12 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 	let conanRoot = path.join(os.homedir(), ".conan");
 	conanOut = vscode.window.createOutputChannel("Conan-Do");
-	conanTaskProvider = vscode.tasks.registerTaskProvider(
-		ConanTaskProvider.conanType,
-		new ConanTaskProvider(workspaceRoot)
-	);
 
 	let conanTerm = vscode.window.createTerminal({ name: 'Conan-Do' });
+	conanOut.show();
 	let conanDo = new ConanDo(
 		new CodeOutputChannel(conanOut),
 		conanRoot,
@@ -43,6 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 			prompt: 'Enter name for new template or keep empty if dont want a template',
 			placeHolder: 'default'
 		}).then(value => {
+			conanOut.show();
 			conanDo.installConan().then(() => {
 				if (value?.trim() === "") {
 					vscode.window.showInformationMessage('Conan is now present - but no template created');
@@ -62,6 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 			prompt: 'Enter name/version for package',
 			placeHolder: 'default/0.1.0'
 		}).then(value => {
+			conanOut.show();
 			conanDo.createNewProject(workspaceRoot, new Project(value!), "default").then(() => {
 				vscode.window.showInformationMessage('new project created');
 			});
@@ -70,6 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	disposable = vscode.commands.registerCommand('conan-do.importDeps', () => {
+		conanOut.show();
 		conanDo.importDepdendencies();
 	});
 	context.subscriptions.push(disposable);
@@ -79,6 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showQuickPick(profiles, {
 			placeHolder: 'choose : your profile e.g. default'
 		}).then((value) => {
+			conanOut.show();
 			conanDo.build('default', value!, 'Release');
 		});
 	});
@@ -89,6 +86,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showQuickPick(profiles, {
 			placeHolder: 'choose : your profile e.g. default'
 		}).then((value) => {
+			conanOut.show();
 			conanDo.build('default', value!, 'Debug');
 		});
 	});
@@ -101,6 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	disposable = vscode.commands.registerCommand('conan-do.genDepTree', () => {
+		conanOut.show();
 		conanDo.generateDepTree(workspaceRoot).then(() => {
 			let treePath = vscode.Uri.file(path.join(workspaceRoot, "build", "tree.html"));
 			vscode.workspace.openTextDocument(treePath).then(textDoc => {
