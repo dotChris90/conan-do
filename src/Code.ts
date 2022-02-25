@@ -1,4 +1,5 @@
-export const conanfile_py = `
+export class Code {
+    static conanfilePy = `
 from json import tool
 from conans import ConanFile
 from conans import tools
@@ -56,8 +57,7 @@ class {{package_name}}Conan(ConanFile):
         self.cpp_info.libs = tools.collect_libs(self)
 
 `;
-
-export const CMakeFile = `
+    static cMakeFile = `
 cmake_minimum_required(VERSION 3.15)
 project(abc CXX)
 
@@ -93,8 +93,7 @@ install(TARGETS Hello DESTINATION "."
         )
 
 `;
-
-export const main_cpp = `
+    static mainCpp = `
 #include "Greeter.hpp"
 
 int main() {
@@ -103,8 +102,7 @@ int main() {
     return 0;
 }
 `;
-
-export const Greeter_hpp = `
+    static greeterHpp = `
 #pragma once
 
 #include <string>
@@ -120,8 +118,8 @@ namespace conan {
         void DoMemoryLeak();
     };
 }`;
-
-export const Greeter_cpp = `#include "Greeter.hpp"
+    static greeterCpp = `
+#include "Greeter.hpp"
 #include "boost/format.hpp"
 
 namespace conan
@@ -144,8 +142,7 @@ namespace conan
         vec->push_back(new std::string("World!"));
     }
 }`;
-
-export const test_CMakeFile = `
+    static testCMakeFile = `
 cmake_minimum_required(VERSION 3.1)
 project(abc_test CXX)
 
@@ -169,8 +166,7 @@ include(GoogleTest)
 
 gtest_discover_tests(pkg_test)
 `;
-
-export const test_Conanfile = `
+    static testConanfile = `
 import os
 
 from conans import ConanFile, CMake, tools
@@ -207,8 +203,7 @@ class AbcTestConan(ConanFile):
             self.output.info("|Skip Test because Cross build ...|")
             self.output.info("-----------------------------------")
 `;
-
-export const test_Greeter = `
+    static testGreeter = `
 #include "gtest/gtest.h"
 #include "Greeter.hpp"
 
@@ -226,8 +221,7 @@ TEST(GreeterTest, MemoryLeak) {
   greeter.DoMemoryLeak();
 }
 `;
-
-export const test_main = `
+    static testMain = `
 #include "gtest/gtest.h"
 
 int main(int argc, char **argv) {
@@ -235,19 +229,7 @@ int main(int argc, char **argv) {
     return RUN_ALL_TESTS();
 }
 `;
-
-export const saniProfi = `
-[settings]
-[options]
-[conf]
-[build_requires]
-[env]
-CXX_FLAGS=-fsanitize=address -fsanitize=leak -fsanitize=thread
-C_FLAGS=-fsanitize=address -fsanitize=leak -fsanitize=thread
-LDFLAGS=-fsanitize=address -fsanitize=leak -fsanitize=thread
-`;
-
-export const settings = `
+    static settings = `
 {
     "C_Cpp.default.includePath": [
         "build/include/**",
@@ -283,8 +265,7 @@ export const settings = `
     ]
 }
 `;
-
-export const launch = `
+    static launch = `
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
@@ -334,3 +315,5 @@ export const launch = `
     ]
 }
 `;
+
+}

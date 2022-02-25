@@ -1,41 +1,9 @@
-import * as Code from './Code';
+import { Code } from './Code';
 import * as fs from 'fs';
-import * as Path from 'path';
 import path = require('path');
 import * as os from 'os';
-import { execSync } from 'child_process';
-import * as Doxy from './doxy_conf';
+import * as PathHelper from './PathHelper';
 import { clangFormat } from './clang-format';
-
-
-class PathCreation {
-    public static createDir(dirPath: string) {
-        fs.mkdirSync(
-            dirPath,
-            { recursive: true }
-        );
-    };
-    public static rmDir(dirPath: string) {
-        if (fs.existsSync(dirPath)) {
-            fs.rmdirSync(dirPath, { recursive: true });
-        }
-    };
-    public static createFile(dirPath: string, fileName: string, content: string): string {
-        fs.writeFileSync(
-            path.join(
-                dirPath,
-                fileName
-            ),
-            content
-        );
-        return path.join(dirPath, fileName);
-    };
-    public static rmIfExist(filePath: string) {
-        if (fs.existsSync(filePath)) {
-            fs.rmSync(filePath);
-        }
-    }
-}
 
 export class ConanTemplateGen {
     private conanRoot: string;
@@ -56,24 +24,24 @@ export class ConanTemplateGen {
             this.templateName
         );
         // root level
-        PathCreation.rmDir(templatePath);
-        PathCreation.createDir(templatePath);
+        PathHelper.DirHelper.rmDir(templatePath);
+        PathHelper.DirHelper.createDir(templatePath);
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 templatePath,
                 "conanfile.py",
-                Code.conanfile_py
+                Code.conanfilePy
             )
         );
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 templatePath,
                 "CMakeLists.txt",
-                Code.CMakeFile
+                Code.cMakeFile
             )
         );
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 templatePath,
                 ".clang-format",
                 clangFormat
@@ -82,86 +50,77 @@ export class ConanTemplateGen {
 
         // src level
         let srcDir = path.join(templatePath, "src");
-        PathCreation.createDir(srcDir);
+        PathHelper.DirHelper.createDir(srcDir);
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 srcDir,
                 "main.cpp",
-                Code.main_cpp
+                Code.mainCpp
             )
         );
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 srcDir,
                 "Greeter.hpp",
-                Code.Greeter_hpp
+                Code.greeterHpp
             )
         );
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 srcDir,
                 "Greeter.cpp",
-                Code.Greeter_cpp
+                Code.greeterCpp
             )
         );
 
         //test level 
         let testDir = path.join(templatePath, "test_package");
-        PathCreation.createDir(testDir);
+        PathHelper.DirHelper.createDir(testDir);
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 testDir,
                 "main.cpp",
-                Code.test_main
+                Code.testMain
             )
         );
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 testDir,
                 "Greeter_test.cpp",
-                Code.test_Greeter
+                Code.testGreeter
             )
         );
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 testDir,
                 "conanfile.py",
-                Code.test_Conanfile
+                Code.testConanfile
             )
         );
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 testDir,
                 "CMakeLists.txt",
-                Code.test_CMakeFile
+                Code.testCMakeFile
             )
         );
 
         //vscode 
         let vscodeDir = path.join(templatePath, ".vscode");
-        PathCreation.createDir(vscodeDir);
+        PathHelper.DirHelper.createDir(vscodeDir);
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 vscodeDir,
                 "launch.json",
                 Code.launch
             )
         );
-        PathCreation.createDir(vscodeDir);
+        PathHelper.DirHelper.createDir(vscodeDir);
         createdFiles.push(
-            PathCreation.createFile(
+            PathHelper.FileHelper.createFile(
                 vscodeDir,
                 "settings.json",
                 Code.settings
-            )
-        );
-        // profiles
-        let profilePath = path.join(this.conanRoot, "profiles");
-        createdFiles.push(
-            PathCreation.createFile(
-                profilePath,
-                "sani",
-                Code.saniProfi
             )
         );
         return createdFiles;
