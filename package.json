@@ -19,8 +19,9 @@
     "onCommand:conan-do.genDepTree",
     "onCommand:conan-do.genDoxy",
     "onCommand:conan-do.cppcheck",
-		"onCommand:workbench.action.tasks.runTask"
-	],
+    "onCommand:conan-do.deploy",
+    "onCommand:workbench.action.tasks.runTask"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -59,6 +60,10 @@
       {
         "command": "conan-do.cppcheck",
         "title": "Conan-Do : CppCheck"
+      },
+      {
+        "command": "conan-do.deploy",
+        "title": "Conan-Do : Deploy"
       }
     ]
   },

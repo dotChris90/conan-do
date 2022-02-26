@@ -33,6 +33,7 @@ export class ConanDo {
     private docDir: string;
     private tree: string;
     private cppcheckBin: string;
+    private cppcheckHtml: string;
     private srcDir: string;
     private doxyBin: string;
 
@@ -53,7 +54,14 @@ export class ConanDo {
             this.buildFiles.push(path.join(this.buildDir, file));
         });
         this.cppcheckBin = path.join(this.buildDir, "cppcheck", "bin", "cppcheck");
+        this.cppcheckHtml = path.join(this.buildDir, "cppcheck", "bin", "cppcheck-htmlreport");
         this.exec = new Executor(this.log);
+    }
+    private getImportedPackagePaths() {
+        return fs.readdirSync(this.buildDir, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .filter(dirent => !(dirent.name === "include"))
+            .map(dirent => dirent.name);
     }
     private removeBuildFiles() {
         if (fs.existsSync(this.buildDir)) {
@@ -119,10 +127,7 @@ export class ConanDo {
                 path.join("..", "test_package"),
                 true
             ).then(() => {
-                let packages = fs.readdirSync(this.buildDir, { withFileTypes: true })
-                    .filter(dirent => dirent.isDirectory())
-                    .filter(dirent => !(dirent.name === "include"))
-                    .map(dirent => dirent.name);
+                let packages = this.getImportedPackagePaths();
                 PathHelper.dirHelper.createDir(this.includeDir);
                 packages.forEach(packageIdx => {
                     let includeIdx = path.join(this.buildDir, packageIdx, "include");
@@ -185,7 +190,7 @@ export class ConanDo {
         );
     }
     public generateDoxygen() {
-        let generator = new ConanCodeGenerator(this.conanRoot);
+        let generator = new ConanCodeGenerator(this.conanRoot, this.projectDir);
         generator.generateDoxyGen();
         PathHelper.dirHelper.rmDir(path.join(this.projectDir, "html"));
         let cmd = this.doxyBin;
@@ -209,7 +214,24 @@ export class ConanDo {
             return this.exec.execPromise(cmd, args, this.projectDir, {}, true);
         }
     }
+    private executeCppCheck() {
+        let args = [
+            "--enable=all",
+            "--xml",
+            "--xml-version=2",
+            "--output-file=cppcheck.xml",
+            this.srcDir
+        ];
+        this.exec.execPromise(this.cppcheckBin, args, path.join(this.projectDir, "cppcheck")).then(() => {
+            args = ["--source-dir=..",
+                "--file=cppcheck.xml",
+                "--report-dir=."
+            ];
+            this.exec.execPromise(this.cppcheckHtml, args, path.join(this.projectDir, "cppcheck"));
+        });
+    }
     public analyzeCppCheck() {
+        PathHelper.dirHelper.createDir(path.join(this.projectDir, "cppcheck"));
         if (!fs.existsSync(this.cppcheckBin)) {
             this.conanAPI.install(
                 "default",
@@ -218,14 +240,50 @@ export class ConanDo {
                 this.buildDir,
                 "cppcheck/2.6@_/_",
                 true
-            );
+            ).then(() => {
+                this.executeCppCheck();
+            });
         }
-        let args = [
-            "--enable=all",
-            "--bug-hunting",
-            "--output-file=./cppcheck.log",
-            this.srcDir
-        ];
-        return this.exec.execPromise(this.cppcheckBin, args, this.projectDir);
+        this.executeCppCheck();
+    }
+    public deploy() {
+        PathHelper.dirHelper.createDir(this.buildDir);
+        this.conanAPI.install(
+            "default",
+            "default",
+            "Release",
+            this.buildDir,
+            "..",
+            true
+        ).then(() => {
+            this.conanAPI.install(
+                "default",
+                "default",
+                "Release",
+                this.buildDir,
+                path.join("..", "test_package"),
+                true
+            ).then(() => {
+                PathHelper.dirHelper.createDir(path.join(this.projectDir, "deploy"));
+                let foldersInPkgs: string[] = [];
+                let packages = this.getImportedPackagePaths();
+                packages.forEach(pkg => {
+                    let foldersInPkg = fs.readdirSync(path.join(this.buildDir, pkg), { withFileTypes: true })
+                        .filter(dir => dir.isDirectory())
+                        .map(dir => dir.name);
+                    foldersInPkgs = foldersInPkgs.concat(foldersInPkg);
+                });
+                let foldersInPkgsSet = new Set(foldersInPkgs);
+                foldersInPkgsSet.forEach(folder => {
+                    PathHelper.dirHelper.createDir(path.join(this.projectDir, "deploy", folder));
+                    packages.forEach(pkg => {
+                        PathHelper.fileHelper.copyIfExist(
+                            path.join(this.buildDir, pkg, folder),
+                            path.join(this.projectDir, "deploy", folder)
+                        );
+                    });
+                });
+            });
+        });
     }
 }

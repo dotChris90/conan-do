@@ -118,7 +118,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	disposable = vscode.commands.registerCommand('conan-do.genDoxy', () => {
-		conanDo.generateDoxygen(workspaceRoot)!.then(() => {
+		conanDo.generateDoxygen()!.then(() => {
 			let doc = path.join(workspaceRoot, "html", "index.html");
 			vscode.workspace.openTextDocument(doc).then(textDoc => {
 				vscode.window.showTextDocument(textDoc, 1, true).then(textEditor => {
@@ -137,6 +137,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	disposable = vscode.commands.registerCommand('conan-do.cppcheck', () => {
 		conanDo.analyzeCppCheck();
+	});
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('conan-do.deploy', () => {
+		conanDo.deploy();
 	});
 	context.subscriptions.push(disposable);
 }
