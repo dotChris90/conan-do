@@ -2,14 +2,12 @@ import * as child_process from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import * as Conan from './ConanTemplateGen';
+import { ConanCodeGenerator } from './ConanCodeGenerator';
 import { Project } from './Project';
 import { ILog } from './ILog';
 import { Executor } from './Executor';
 import { ConanAPI } from './ConanAPI';
-import * as PathHelper from './PathHelper';
-import * as Doxy from './doxy_conf';
-
+import { PathHelper } from './PathHelper';
 
 class CONFIG {
     public static buildFiles = [
@@ -37,6 +35,7 @@ export class ConanDo {
     private cppcheckBin: string;
     private srcDir: string;
     private doxyBin: string;
+
     constructor(log: ILog, conanRoot: string, projectDir: string) {
         this.log = log;
         this.conanAPI = new ConanAPI(this.log);
@@ -59,16 +58,16 @@ export class ConanDo {
     private removeBuildFiles() {
         if (fs.existsSync(this.buildDir)) {
             this.buildFiles.forEach(file => {
-                PathHelper.FileHelper.rmIfExist(file);
+                PathHelper.fileHelper.rmIfExist(file);
             });
         }
     }
     private removeDocs() {
-        PathHelper.DirHelper.rmDir(this.docDir);
-        PathHelper.FileHelper.rmIfExist(this.tree);
+        PathHelper.dirHelper.rmDir(this.docDir);
+        PathHelper.fileHelper.rmIfExist(this.tree);
     }
     private removeTestBuild() {
-        PathHelper.DirHelper.rmDir(this.testBuildDir);
+        PathHelper.dirHelper.rmDir(this.testBuildDir);
     }
     private removeCMakePaths(postfixBuildDir: string = "") {
         let cmakeBuildDirs = fs.readdirSync(this.projectDir, { withFileTypes: true })
@@ -76,14 +75,14 @@ export class ConanDo {
             .filter(dirent => dirent.name.startsWith(`cmake-build-${postfixBuildDir}`))
             .map(dirent => dirent.name);
         cmakeBuildDirs.forEach(cmakeBuildDir => {
-            PathHelper.DirHelper.rmDir(path.join(this.projectDir, cmakeBuildDir));
+            PathHelper.dirHelper.rmDir(path.join(this.projectDir, cmakeBuildDir));
         });
         let cmakeFiles = fs.readdirSync(this.buildDir, { withFileTypes: true })
             .filter(dirent => !dirent.isDirectory())
             .filter(dirent => dirent.name.endsWith(".cmake"))
             .map(dirent => dirent.name);
         cmakeFiles.forEach(file => {
-            PathHelper.FileHelper.rmIfExist(path.join(this.buildDir, file));
+            PathHelper.fileHelper.rmIfExist(path.join(this.buildDir, file));
         });
     }
     public installConan() {
@@ -96,14 +95,14 @@ export class ConanDo {
         return this.exec.execPromise(cmd, args);
     }
     public createTemplate(templateName: string = "default"): void {
-        let generator = new Conan.ConanTemplateGen(this.conanRoot, templateName);
-        let templateFiles = generator.generateTemplateFiles();
+        let generator = new ConanCodeGenerator(this.conanRoot);
+        let templateFiles = generator.generateTemplateFiles(templateName);
     }
     public createNewProject(dirPath: string, project: Project, templateName: string) {
         return this.conanAPI.new(project.getFullName(), templateName, dirPath);
     }
     public importDepdendencies() {
-        PathHelper.DirHelper.createDir(this.buildDir);
+        PathHelper.dirHelper.createDir(this.buildDir);
         this.conanAPI.install(
             "default",
             "default",
@@ -124,10 +123,10 @@ export class ConanDo {
                     .filter(dirent => dirent.isDirectory())
                     .filter(dirent => !(dirent.name === "include"))
                     .map(dirent => dirent.name);
-                PathHelper.DirHelper.createDir(this.includeDir);
+                PathHelper.dirHelper.createDir(this.includeDir);
                 packages.forEach(packageIdx => {
                     let includeIdx = path.join(this.buildDir, packageIdx, "include");
-                    PathHelper.FileHelper.copyIfExist(includeIdx, path.join(this.buildDir, "include"));
+                    PathHelper.fileHelper.copyIfExist(includeIdx, path.join(this.buildDir, "include"));
                 });
             });
         });
@@ -146,9 +145,9 @@ export class ConanDo {
             false
         ).then(() => {
             this.conanAPI.build("..", this.buildDir).then(() => {
-                PathHelper.DirHelper.createDir(this.testBuildDir);
+                PathHelper.dirHelper.createDir(this.testBuildDir);
                 fs.readdirSync(this.testBuildDir).forEach((folder => {
-                    PathHelper.DirHelper.rmDir(path.join(this.testBuildDir, folder));
+                    PathHelper.dirHelper.rmDir(path.join(this.testBuildDir, folder));
                 }));
                 this.conanAPI.create(
                     buildProfile,
@@ -178,28 +177,23 @@ export class ConanDo {
         this.removeTestBuild();
     }
     public generateDepTree(projectRoot: string) {
-        PathHelper.DirHelper.createDir(this.buildDir);
-        PathHelper.FileHelper.rmIfExist(path.join(this.buildDir, "tree.html"));
+        PathHelper.dirHelper.createDir(this.buildDir);
+        PathHelper.fileHelper.rmIfExist(path.join(this.buildDir, "tree.html"));
         return this.conanAPI.info(
             this.projectDir,
             this.tree
         );
     }
-    public generateDoxygen(projectRoot: string) {
-        if (!fs.existsSync(path.join(projectRoot, "doxy.conf"))) {
-            PathHelper.FileHelper.createFile(
-                projectRoot,
-                "doxy.conf",
-                Doxy.doxygen
-            );
-        };
-        PathHelper.DirHelper.rmDir(path.join(projectRoot, "html"));
+    public generateDoxygen() {
+        let generator = new ConanCodeGenerator(this.conanRoot);
+        generator.generateDoxyGen();
+        PathHelper.dirHelper.rmDir(path.join(this.projectDir, "html"));
         let cmd = this.doxyBin;
         let args = [
-            path.join(projectRoot, "doxy.conf")
+            path.join(this.projectDir, "doxy.conf")
         ];
         if (!fs.existsSync(this.doxyBin)) {
-            PathHelper.DirHelper.createDir(this.buildDir);
+            PathHelper.dirHelper.createDir(this.buildDir);
             this.conanAPI.install(
                 "default",
                 "default",
@@ -226,6 +220,12 @@ export class ConanDo {
                 true
             );
         }
-        return this.exec.execPromise(this.cppcheckBin, [this.srcDir]);
+        let args = [
+            "--enable=all",
+            "--bug-hunting",
+            "--output-file=./cppcheck.log",
+            this.srcDir
+        ];
+        return this.exec.execPromise(this.cppcheckBin, args, this.projectDir);
     }
 }
