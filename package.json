@@ -6,8 +6,18 @@
   "engines": {
     "vscode": "^1.54.0"
   },
+  "icon": "images/logo.png",
   "categories": [
+    "Programming Languages",
     "Other"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dotChris90/conan-do.git"
+  },
+  "keywords": [
+    "conan",
+    "C++"
   ],
   "activationEvents": [
     "onCommand:conan-do.setup",
