@@ -3,20 +3,17 @@ import * as vscode from 'vscode';
 
 export class CodeOutputChannel implements ILog {
     private terminal: vscode.OutputChannel;
-    constructor(terminal: vscode.OutputChannel) {
-        this.terminal = terminal;
+    constructor() {
+        this.terminal = vscode.window.createOutputChannel("Conan-Do");
     }
-    writeOut(text: string, withDate = false): void {
-        if (withDate) {
-            this.terminal.appendLine("");
-            this.terminal.appendLine("\n------------------------------------------------------------------------------");
-            this.terminal.appendLine(`|----------${new Date(Date.now())}---------|`);
-            this.terminal.appendLine("------------------------------------------------------------------------------");
-            this.terminal.appendLine("");
-        }
+    writeOut(text: string): void {
         this.terminal.append(text);
     };
     writeErr(text: string): void {
-        // ToDO : implement error
+        this.terminal.append(text);
+    }
+    clear(): void {
+        this.terminal.clear();
+        this.terminal.show();
     }
 }

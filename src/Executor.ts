@@ -7,14 +7,14 @@ export class Executor {
   constructor(log: ILog) {
     this.log = log;
   }
-  public execPromise(command: string, args: string[], workingDir: string = "", options: any = {}, withDate = false) {
+  public execPromise(command: string, args: string[], workingDir: string = "", options: any = {}) {
     workingDir = workingDir === "" ? process.cwd() : workingDir;
     return new Promise((resolve, reject) => {
       options['cwd'] = workingDir;
       options['shell'] = true;
       const commandProc = spawn(command, args, options);
       commandProc.stdout.on("data", (data) => {
-        this.log.writeOut(data.toString(), withDate);
+        this.log.writeOut(data.toString());
       });
       commandProc.stderr.on("data", (data) => {
         this.log.writeErr(data.toString());

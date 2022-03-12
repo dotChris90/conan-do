@@ -110,6 +110,7 @@ export class ConanDo {
         return this.conanAPI.new(project.getFullName(), templateName, dirPath);
     }
     public importDepdendencies() {
+        this.log.clear();
         PathHelper.dirHelper.createDir(this.buildDir);
         this.conanAPI.install(
             "default",
@@ -140,6 +141,7 @@ export class ConanDo {
         return this.conanAPI.profile();
     }
     public build(buildProfile: string, hostProfile: string, type: string) {
+        this.log.clear();
         this.clean();
         this.conanAPI.install(
             buildProfile,
@@ -190,6 +192,7 @@ export class ConanDo {
         );
     }
     public generateDoxygen() {
+        this.log.clear();
         let generator = new ConanCodeGenerator(this.conanRoot, this.projectDir);
         generator.generateDoxyGen();
         PathHelper.dirHelper.rmDir(path.join(this.projectDir, "html"));
@@ -207,14 +210,15 @@ export class ConanDo {
                 "doxygen/1.9.2@_/_",
                 true
             ).then(() => {
-                return this.exec.execPromise(cmd, args, this.projectDir, {}, true);
+                return this.exec.execPromise(cmd, args, this.projectDir, {});
             });
         }
         else {
-            return this.exec.execPromise(cmd, args, this.projectDir, {}, true);
+            return this.exec.execPromise(cmd, args, this.projectDir, {});
         }
     }
     private executeCppCheck() {
+        this.log.clear();
         let args = [
             "--enable=all",
             "--xml",
@@ -231,6 +235,7 @@ export class ConanDo {
         });
     }
     public analyzeCppCheck() {
+        this.log.clear();
         PathHelper.dirHelper.createDir(path.join(this.projectDir, "cppcheck"));
         if (!fs.existsSync(this.cppcheckBin)) {
             this.conanAPI.install(
@@ -247,6 +252,7 @@ export class ConanDo {
         this.executeCppCheck();
     }
     public deploy() {
+        this.log.clear();
         PathHelper.dirHelper.createDir(this.buildDir);
         this.conanAPI.install(
             "default",
